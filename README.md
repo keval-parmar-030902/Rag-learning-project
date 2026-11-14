@@ -2,7 +2,7 @@
 
 A 100% local, privacy-preserving **Retrieval-Augmented Generation (RAG)** system built from scratch in Python using **[LangChain](https://docs.langchain.com/oss/python/langchain/knowledge-base)**, **[ChromaDB](https://github.com/chroma-core/chroma)**, **[Ollama](https://docs.langchain.com/oss/python/integrations/providers/ollama)** (`nomic-embed-text` + `llama3.2`), and **[Streamlit](https://docs.streamlit.io/develop/api-reference)**.
 
-This repository is structured both as a **step-by-step educational implementation** (`step1` through `step5` scripts) and a **full-featured interactive Streamlit web application** (`app.py`) that displays retrieved source chunks, page numbers, character offsets, and vector distance scores right next to every LLM response.
+This repository is structured both as a **step-by-step educational implementation** (`step1` through `step5` scripts) and a **full-featured interactive Streamlit web application** (`main.py`) that displays retrieved source chunks, page numbers, character offsets, and vector distance scores right next to every LLM response.
 
 ## ✨ Key Features & Engineering Highlights
 
@@ -16,22 +16,18 @@ This repository is structured both as a **step-by-step educational implementatio
 
 | Stage | Script / Module | Core LangChain / Vector Class | What Happens Under the Hood |
 | :--- | :--- | :--- | :--- |
-| **Step 1: Document Loading** | `step1_load_pdf.py` | [`PyPDFLoader`](https://reference.langchain.com/python/langchain-community/document_loaders/pdf/PyPDFLoader) | Parses binary PDF files page-by-page into `Document` objects containing `page_content` and `metadata` (`source`, `page`). |
-| **Step 2: Text Chunking** | `step2_chunk_pdf.py` | [`RecursiveCharacterTextSplitter`](https://reference.langchain.com/python/langchain-text-splitters/character/RecursiveCharacterTextSplitter) | Splits pages hierarchically (`\n\n` $\rightarrow$ `\n` $\rightarrow$ space) into 800-character chunks with a 150-character sliding window overlap and `start_index` tracking. |
-| **Step 3: Embeddings & Math** | `step3_embeddings.py` | [`OllamaEmbeddings`](https://reference.langchain.com/python/langchain-ollama/embeddings/OllamaEmbeddings) | Maps text chunks and queries into 768-float semantic vectors ($\vec{v} \in \mathbb{R}^{768}$) and verifies closeness via Cosine Similarity. |
-| **Step 4: Vector Store Indexing** | `step4_vectorstore_chroma.py` | [`Chroma`](https://reference.langchain.com/python/langchain-chroma/vectorstores/Chroma) | Persists chunk vectors, raw text, and metadata into a local SQLite + HNSW graph index (`./chroma_db`) for millisecond nearest-neighbor search. |
-| **Step 5: Augmented Generation** | `step5_rag_chat.py` | [`ChatPromptTemplate`](https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate) + [`ChatOllama`](https://reference.langchain.com/python/langchain-ollama/chat_models/ChatOllama) | Retrieves the Top-$K$ chunks from ChromaDB, injects them into a strict system prompt (`temperature=0`), and prints the LLM answer alongside the source chunks. |
-| **Milestone UI: Web Studio** | `app.py` | [`st.file_uploader`](https://docs.streamlit.io/develop/api-reference/widgets/st.file_uploader) + [`st.session_state`](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state) | Combines Steps 1–5 into an interactive browser studio with PDF upload, live chunking sliders, metric cards, and expandable source chunk cards. |
+| **Step 1: Document Loading** | `rag_learning.ipynb` | [`PyPDFLoader`](https://reference.langchain.com/python/langchain-community/document_loaders/pdf/PyPDFLoader) | Parses binary PDF files page-by-page into `Document` objects containing `page_content` and `metadata` (`source`, `page`). |
+| **Step 2: Text Chunking** | `rag_learning.ipynb` | [`RecursiveCharacterTextSplitter`](https://reference.langchain.com/python/langchain-text-splitters/character/RecursiveCharacterTextSplitter) | Splits pages hierarchically (`\n\n` $\rightarrow$ `\n` $\rightarrow$ space) into 800-character chunks with a 150-character sliding window overlap and `start_index` tracking. |
+| **Step 3: Embeddings & Math** | `rag_learning.ipynb` | [`OllamaEmbeddings`](https://reference.langchain.com/python/langchain-ollama/embeddings/OllamaEmbeddings) | Maps text chunks and queries into 768-float semantic vectors ($\vec{v} \in \mathbb{R}^{768}$) and verifies closeness via Cosine Similarity. |
+| **Step 4: Vector Store Indexing** | `rag_learning.ipynb` | [`Chroma`](https://reference.langchain.com/python/langchain-chroma/vectorstores/Chroma) | Persists chunk vectors, raw text, and metadata into a local SQLite + HNSW graph index (`./chroma_db`) for millisecond nearest-neighbor search. |
+| **Step 5: Augmented Generation** | `rag_learning.ipynb` | [`ChatPromptTemplate`](https://reference.langchain.com/python/langchain-core/prompts/chat/ChatPromptTemplate) + [`ChatOllama`](https://reference.langchain.com/python/langchain-ollama/chat_models/ChatOllama) | Retrieves the Top-$K$ chunks from ChromaDB, injects them into a strict system prompt (`temperature=0`), and prints the LLM answer alongside the source chunks. |
+| **Milestone UI: Web Studio** | `main.py` | [`st.file_uploader`](https://docs.streamlit.io/develop/api-reference/widgets/st.file_uploader) + [`st.session_state`](https://docs.streamlit.io/develop/api-reference/caching-and-state/st.session_state) | Combines Steps 1–5 into an interactive browser studio with PDF upload, live chunking sliders, metric cards, and expandable source chunk cards. |
 
 ## 📂 Repository Structure
 
 ```text
-├── app.py                        # Complete Streamlit RAG Web Application (All 5 Steps + Chunk Inspector)
-├── step1_load_pdf.py             # Step 1: Load PDF pages and inspect Document metadata
-├── step2_chunk_pdf.py            # Step 2: Split pages with RecursiveCharacterTextSplitter & verify overlap
-├── step3_embeddings.py           # Step 3: Generate 768-D Ollama embeddings & compute Cosine Similarity
-├── step4_vectorstore_chroma.py   # Step 4: Index chunks into persistent ChromaDB & run similarity search
-├── step5_rag_chat.py             # Step 5: Interactive CLI RAG chat with side-by-side chunk printing
+├── main.py                        # Complete Streamlit RAG Web Application (All 5 Steps + Chunk Inspector)
+├── rag_learning.ipynb             # All steps of the learning is here.
 ├── requirements.txt              # Python package dependencies
 └── README.md                     # Project documentation and setup guide
 ```
@@ -112,25 +108,23 @@ streamlit run app.py
 3. Adjust **Chunk Size** (default `800`), **Chunk Overlap** (default `150`), and **Top-K Retrieved Chunks** (default `3`) as needed.
 4. Type any question in the chat box at the bottom. The left column displays the **Grounded LLM Answer** with `[Page X]` citations, and the right column displays the **Retrieved Source Chunks** with their exact page numbers, character offsets, and vector distance scores.
 
-### 2. Run the Step-by-Step Learning Scripts (CLI)
-
-To test each stage of the RAG pipeline individually from the terminal, place a sample PDF named `sample.pdf` in the project root and run the scripts in sequence:
+### 2. Run the Jupyter Notebook
 
 ```bash
-# Step 1: Parse PDF pages and inspect raw text + page metadata
-python step1_load_pdf.py
+jupyter notebook
+```
 
-# Step 2: Slice pages into overlapping chunks and verify sliding-window overlap
-python step2_chunk_pdf.py
+```bash
+jupyter lab
+```
 
-# Step 3: Generate 768-D vectors and verify Cosine Similarity math
-python step3_embeddings.py
+#### OR
+```bash
+uv run jupyter notebook
+```
 
-# Step 4: Index chunks into ./chroma_db and test Top-3 similarity search
-python step4_vectorstore_chroma.py
-
-# Step 5: Start the interactive terminal RAG chat loop
-python step5_rag_chat.py
+```bash
+uv run jupyter lab
 ```
 
 ## 🧠 Core Theory Quick-Reference (Why Each Parameter Matters)
